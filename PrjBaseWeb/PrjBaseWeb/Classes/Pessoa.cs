@@ -7,17 +7,20 @@ namespace PrjCalculadoraWeb.Classes
 {
     public class Pessoa
     {
-        public string Nome { get; private set; }
-        public string CPF { get; private set; }
-        public char Sexo { get; private set; }
-        public DateTime DataNascimento { get; set; }
+        public string nome { get; private set; }
+        public string cpf { get; private set; }
+        public DateTime dtNasc { get; private set; }
+        public char sexo { get; private set; }
 
-        public Pessoa(string nome, string cPF, char sexo, DateTime dataNascimento)
+        public Pessoa(string nome,
+            string cpf,
+            DateTime dtNasc,
+            char sexo)
         {
-            Nome = nome;
-            CPF = cPF;
-            Sexo = sexo;
-            DataNascimento = dataNascimento;
+            this.nome = nome;
+            this.cpf = cpf;
+            this.dtNasc = dtNasc;
+            this.sexo = sexo;
         }
     }
 }

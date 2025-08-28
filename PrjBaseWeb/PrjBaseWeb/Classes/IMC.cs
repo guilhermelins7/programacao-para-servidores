@@ -7,44 +7,36 @@ namespace PrjCalculadoraWeb.Classes
 {
     public class IMC
     {
-        public float Peso { get; private set; }
-        public float Altura { get; private set; }
+        public float peso { get; private set; }
+        public float altura { get; private set; }
 
         public IMC(float peso, float altura)
         {
-            Peso = peso;
-            Altura = altura;
+            this.peso = peso;
+            this.altura = altura;
         }
-
-        public String Diagnostico()
+        private float Calcula()
         {
             try
             {
-                float imc = Calculo();
-                if (imc < 16) return "Baixo peso Grau III (Vareta)";
-                if (imc < 17) return "Baixo peso Grau II";
-                if (imc < 18.5) return "Baixo peso Grau I";
-                if (imc < 25) return "Peso Ideal";
-                if (imc < 30) return "Sobrepeso";
-                if (imc < 35) return "Obesidade Grau I";
-                if (imc < 40) return "Obesidade Grau II";
-                return "Obesidade Grau III (Gordão)";
+                return peso / (altura * altura);
             }
             catch (Exception)
             {
                 throw;
             }
         }
-
-        private float Calculo()
+        public String Diagnostico()
         {
-            try
-            {
-                return Peso / (Altura * Altura);
-            } catch (Exception)
-            {
-                throw;
-            }
+            float imc = Calcula();
+
+            if (imc < 16.5) return "Baixo peso severo!";
+            if (imc < 18.5) return "Baixo peso!";
+            if (imc < 25) return "Peso normal";
+            if (imc < 30) return "Sobrepeso";
+            if (imc < 35) return "Obesidade I";
+            if (imc < 40) return "Obesidade II :-(";
+            return "Obesidade III :=(¨)";
         }
     }
 }

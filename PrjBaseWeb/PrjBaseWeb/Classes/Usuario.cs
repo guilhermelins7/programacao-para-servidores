@@ -7,15 +7,25 @@ namespace PrjCalculadoraWeb.Classes
 {
     public class Usuario : Pessoa
     {
+        public String login { get; private set; }
+        public String senha { get; private set; }
 
-        public string Login { get; private set; }
-        public string Senha { get; private set; }
-
-        public Usuario(string nome, string cPF, char sexo, DateTime dataNascimento, string login, string senha) : base(nome, cPF, sexo, dataNascimento)
+        public Usuario(
+            string nome,
+            string cpf,
+            DateTime dtNasc,
+            String login,
+            String senha,
+            char sexo) : base(nome, cpf, dtNasc, sexo)
         {
-            Login = login;
-            Senha = senha;
+            this.login = login;
+            this.senha = senha;
         }
 
+        public bool Verifica(string login, string senha)
+        {
+            return this.login.Equals(login) &&
+                   this.senha.Equals(senha);
+        }
     }
 }

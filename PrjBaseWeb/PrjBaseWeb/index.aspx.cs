@@ -1,81 +1,210 @@
-﻿using System;
+﻿using PrjCalculadoraWeb.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Text.RegularExpressions;
-using System.Globalization;
-using PrjCalculadoraWeb.Classes;
 
 namespace PrjBaseWeb
 {
     public partial class index : System.Web.UI.Page
     {
+
+        private static List<Paciente> pacientes = new List<Paciente>();
         protected void Page_Load(object sender, EventArgs e)
         {
+            Usuario u = (Usuario)Session["usuario"];
+
+            if (u == null)
+            {
+                Response.Redirect("FrmLogin.aspx", true);
+                return;
+            }
         }
 
-        protected void Submit(object sender, EventArgs e)
+        protected void btLimpar_Click(object sender, EventArgs e)
         {
-            if (InputNome.Text == "")
+            InputAltura.Text =
+                InputCPF.Text =
+                InputNascimento.Text =
+                InputNome.Text =
+                InputPeso.Text =
+                Resultado.Text = String.Empty;
+
+            Fem.Checked =
+               Masc.Checked = NRA.Checked = false;
+
+            InputCPF.ReadOnly =
+                    InputNascimento.ReadOnly =
+                    InputNome.ReadOnly = false;
+
+            Fem.Enabled =
+                Masc.Enabled =
+                NRA.Enabled = true;
+
+            Session["paciente"] = null;
+        }
+
+        protected void btOk_Click(object sender, EventArgs e)
+        {
+            if (!float.TryParse(InputAltura.Text, out float altura) ||
+                !float.TryParse(InputPeso.Text, out float peso))
             {
-                Resultado.Text = "Nome deve ser completo.";
-                return;
-            }
-            if(InputCPF.Text.Length < 14)
-            {
-                Resultado.Text = "CPF Deve ter 14 digitos.";
-                return;
-            }
-
-            if(!Regex.IsMatch(InputNascimento.Text, @"^\d{2}/\d{2}/\d{4}$"))
-            {
-                Resultado.Text = "Data inválida.";
-                return;
-            }
-
-            DateTime dataFomatada = DateTime.ParseExact(InputNascimento.Text, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-
-            DateTime dataLimiteQuinze = DateTime.Today.AddYears(-15);
-            DateTime dataLimiteCem = DateTime.Today.AddYears(-100);    
-
-            if (dataFomatada > dataLimiteQuinze || dataFomatada < dataLimiteCem)
-            {
-                Resultado.Text = "A data de nascimento deve estar entre 15 e 100 anos.";
-                return;
-            }
-
-            float alturaNumber = float.Parse(InputAltura.Text);
-
-            if(alturaNumber < 1.1 || alturaNumber > 2.2)
-            {
-                Resultado.Text = "A altura deve estar entre 1.1 e 2.2";
+                Resultado.Text = "Atura ou peso inválidos";
                 return;
             }
 
-            char sexo = 'N';
-            if (Fem.Checked) sexo = 'F';
+            if (altura < 1.1 || altura > 2.2)
+            {
+                Resultado.Text = "Altura deve estar entre 1.1m e 2.2m";
+                return;
+            }
+
+            if (Session["paciente"] != null)
+            {
+                Paciente paciente = (Paciente)Session["paciente"];
+                paciente.Atualiza(peso, altura);
+                Mostrar(paciente);
+                return;
+            }
+
+            if (!DateTime.TryParse(InputNascimento.Text, out DateTime dt))
+            {
+                Resultado.Text = "Erro de digitação de data: (DD/MM/AAAA)";
+                return;
+            }
+
+            int idade = DateTime.Now.Year - dt.Year;
+
+            if (idade < 15 || idade > 100)
+            {
+                Resultado.Text = "Idades entre 15 e 100 anos";
+                return;
+            }
+
+            if (Fem.Checked == false && Masc.Checked == false && NRA.Checked == false)
+            {
+                Resultado.Text = "Selecione o sexo";
+                return;
+            }
+
+            if (InputCPF.Text.Length != 14)
+            {
+                Resultado.Text = "CPF invalido";
+                return;
+            }
+            if (InputNome.Text == String.Empty)
+            {
+                Resultado.Text = "Nome não pode estar em branco";
+                return;
+            }
+
+            char sexo = '*';
+
             if (Masc.Checked) sexo = 'M';
+            if (Fem.Checked) sexo = 'F';
 
-            string nome = InputNome.Text;
-            string cpf = InputCPF.Text;
-            DateTime dataNascimento = DateTime.ParseExact(InputNascimento.Text, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            float peso = float.Parse(InputPeso.Text);
-            float altura = float.Parse(InputAltura.Text);
+            try
+            {
+                Paciente p = new Paciente(InputNome.Text, InputCPF.Text, dt, sexo, peso, altura);
+                Resultado.Text = p.Diagnostico();
 
-            Paciente novoPaciente = new Paciente(nome, cpf, sexo, dataNascimento, peso, altura);
+                foreach (Paciente paciente in pacientes)
+                {
+                    if (InputCPF.Text.Equals(paciente.cpf))
+                    {
+                        Resultado.Text = "Paciente já cadastrado";
+                        return;
+                    }
+                }
 
-            Resultado.Text = novoPaciente.imc.Diagnostico();
+                pacientes.Add(p);
+            }
+            catch (Exception ex)
+            {
+                Resultado.Text = "Erro: " + ex.Message;
+            }
         }
 
-        protected void Clear(object sender, EventArgs e)
+        private void Mostrar(Paciente p)
         {
-            InputNome.Text = "";
-            InputCPF.Text = "";
-            InputNascimento.Text = "";
-            InputPeso.Text = "";
-            InputAltura.Text = "";
+            InputAltura.Text = p.Altura().ToString();
+            InputCPF.Text = p.cpf;
+            InputNascimento.Text = p.dtNasc.ToString("dd/MM/yyyy");
+            InputNome.Text = p.nome;
+            InputPeso.Text = p.Peso().ToString();
+
+            Resultado.Text = p.Diagnostico();
+
+            Fem.Checked = p.sexo == 'F';
+            Masc.Checked = p.sexo == 'M';
+            NRA.Checked = p.sexo == '*';
+        }
+
+        protected void btOkBusca_Click(object sender, EventArgs e)
+        {
+            string cpfBusca = Busca.Text;
+
+            if (string.IsNullOrEmpty(cpfBusca))
+            {
+                Resultado.Text = "Informe um CPF para busca.";
+                return;
+            }
+
+            foreach (Paciente p in pacientes)
+            {
+                if (p.cpf.Equals(cpfBusca))
+                {
+                    InputCPF.ReadOnly = true;
+                    InputNascimento.ReadOnly = true;
+                    InputNome.ReadOnly = true;
+                    Fem.Enabled = false;
+                    Masc.Enabled = false;
+                    NRA.Enabled = false;
+
+                    Session["paciente"] = p;
+                    Mostrar(p);
+                    return;
+                }
+            }
+
+            Resultado.Text = "Paciente não cadastrado";
+        }
+
+        protected void btExcluir_Click(object sender, EventArgs e)
+        {
+            Paciente paciente = (Paciente)Session["paciente"];
+
+            if (paciente != null)
+            {
+                pacientes.Remove(paciente);
+
+                InputAltura.Text =
+                InputCPF.Text =
+                InputNascimento.Text =
+                InputNome.Text =
+                InputPeso.Text =
+                Resultado.Text = String.Empty;
+
+                Fem.Checked =
+                Masc.Checked = NRA.Checked = false;
+
+                Session["paciente"] = null;
+
+                AtualizarBotaoExcluir();
+
+                Resultado.Text = "Paciente excluído com sucesso!";
+            }
+            else
+            {
+                Resultado.Text = "Nenhum paciente selecionado para exclusão.";
+            }
+        }
+
+        private void AtualizarBotaoExcluir()
+        {
+            BtnExcluir.Enabled = pacientes.Count > 0;
         }
     }
 }

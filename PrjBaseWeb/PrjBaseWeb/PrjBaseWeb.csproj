@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="estilo.css" />
+    <Content Include="FRMLogin.aspx" />
     <Content Include="index.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -69,6 +70,13 @@
     <Compile Include="Classes\Paciente.cs" />
     <Compile Include="Classes\Pessoa.cs" />
     <Compile Include="Classes\Usuario.cs" />
+    <Compile Include="FRMLogin.aspx.cs">
+      <DependentUpon>FRMLogin.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FRMLogin.aspx.designer.cs">
+      <DependentUpon>FRMLogin.aspx</DependentUpon>
+    </Compile>
     <Compile Include="index.aspx.cs">
       <DependentUpon>index.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

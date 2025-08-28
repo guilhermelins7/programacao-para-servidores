@@ -186,6 +186,42 @@ namespace PrjBaseWeb
         protected global::System.Web.UI.WebControls.Button BtnClear;
 
         /// <summary>
+        /// BtnExcluir control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button BtnExcluir;
+
+        /// <summary>
+        /// Busca control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Busca;
+
+        /// <summary>
+        /// InputBusca control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox InputBusca;
+
+        /// <summary>
+        /// btnBusca control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnBusca;
+
+        /// <summary>
         /// ResultadoLabel control.
         /// </summary>
         /// <remarks>
